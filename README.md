@@ -98,6 +98,7 @@ Prerequisites can be found here, [Spring Boot Application Instruction](https://g
 * I just load data one time when the application was started.
 * Please note that there were `a lot of differences format`, not only changing currencies but also changing positions <br> 
 and sometimes, two currencies are there and some are unstructured format. Even some have character encoding issue and also some are not valid data.
+* For the differences format, please see the file `/resources/jobinfo-data/sample-differences-format-data.txt`.
 * I control all the things as much as I can and convert it to BAHT currency which is use as default currency in this application.
 
 
