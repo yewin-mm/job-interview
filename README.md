@@ -96,8 +96,8 @@ Prerequisites can be found here, [Spring Boot Application Instruction](https://g
 * You can see my Dynamic Reading from `application.properties` file and Salary Calculator based on your input data set.
 * So, if you want to add new currency, just add your currency and value in `application.properties`.
 * I just load data one time when the application was started.
-* Please note that there were a lot of difference not only changing currencies, but also changing positions <br> 
-and sometimes, two currencies are there and some are unstructured format. Even some have character encoding issue.
+* Please note that there were `a lot of differences format`, not only changing currencies but also changing positions <br> 
+and sometimes, two currencies are there and some are unstructured format. Even some have character encoding issue and also some are not valid data.
 * I control all the things as much as I can and convert it to BAHT currency which is use as default currency in this application.
 
 
