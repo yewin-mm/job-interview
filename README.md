@@ -108,6 +108,7 @@ Prerequisites can be found here, [Spring Boot Application Instruction](https://g
     docker-compose up -d  
     ```
   * If you see the logs like `Container yewin_job_interview_container  Started`, that's mean application was successfully run.
+  * Here, I get credentials data from `.env` file for security purpose.
   
 * Facts
   * You can see my Dynamic Reading from `application.properties` file and Salary Calculator based on your input data set.
@@ -116,7 +117,7 @@ Prerequisites can be found here, [Spring Boot Application Instruction](https://g
   * There have two data set file with more than 3700 data to load into database and these two are equal, I used `salary_survey.json` file as my data set.
   * Please note that there were `a lot of differences format in salay column`, not only changing currencies but also changing positions 
   and sometimes, two currencies are there and some are unstructured format. Plus, some have character encoding issue and also some are not valid data.
-  * For the differences format, please see the file `/resources/jobinfo-data/sample-differences-format-data.txt`.
+  * For the differences format, please see my note file `/resources/jobinfo-data/sample-differences-format-data.txt`.
   * I control all the things as much as I can with dynamically (please see in `SalaryCalcular` class) and convert it to `BAHT` currency which is use as default currency in this application.
 
 
