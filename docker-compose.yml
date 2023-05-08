@@ -1,0 +1,103 @@
+### I get sensitive data (credentials) by reading .env file for Security reason.
+version: "3.9"
+services:
+  mysqldb:
+    # pull latest mysql db image from docker hub if that's not existed in your local.
+    image: mysql:latest
+
+    # bind with below `networks` keyword, we need to run under same network to call well to this db service from below app.
+    networks:
+      - yewin-job-interview
+
+    # set container name, so that our below app can call this db service by this name.
+    container_name: yewin_job_interview_db
+
+    # Docker support 4 restart policy,
+    # I used `unless-stopped` policy because I don't want auto restart my MySQL container after docker deamon (docker desktop) was started on both manually stopped condition and docker deamon stopped condition.
+    # You can use `always` policy if you want auto restart after docker desktop was started or even your application was runtime failed, it will always auto restart (it will cause high load in memory). You can find more about restart policy in google.
+    restart: unless-stopped
+
+    # I used .env file to store my confidential information like password, etc.
+    # And you can divide many env file as per your running environment.
+    # eg. if you run your application on development environment (dev server), you can use .dev_env.
+    # eg. if you run your application on production environment (prod server), you can use .prod_evn. because production credentials won't be same with development credentials.
+    # So, using env file is the good approach to dynamically adding credentials than changing manually as per environment.
+    env_file: ./.env
+
+    # here, $ is the variable which define in env file, and we don't add static value for security reason and used value inside env file.
+    environment:
+      - MYSQL_ROOT_PASSWORD=$MYSQLDB_ROOT_PASSWORD
+      - MYSQL_DATABASE=$MYSQLDB_DATABASE_NAME
+
+    # set port to run this db container, I get value from .env file
+    # and avoid default port `3306` not to conflict with my existing mysql db container port
+    # but, we need to use default port `3306` when running inside docker container.
+    # so, I set mysql db public port to `3308` when calling from outside this mysql db container.
+    ports:
+      - $MYSQLDB_PUBLIC_PORT:$MYSQLDB_INSIDE_DOCKER_PORT
+
+    # volume is to keep our data (persist our data) for preventing from deleting container as if we delete our container, our data can't get back.
+    # So, our database data will be stored outside of db container.
+    # Bind volume name call `db` with below `volumes` keyword.
+    # path is inside container, and you can give as you want.
+    volumes:
+      - db:/var/lib/mysql
+
+
+  myapp:
+    # set image and container name
+    image: yewin-job-interview-image
+    container_name: yewin_job_interview_container
+
+    # bind with below networks keyword, we need to run under same network to call above MySQL DB container.
+    networks:
+      - yewin-job-interview
+
+    # depend_on mean, our app will run after `mysqldb` service (above db container) was started,
+    # if not so, our app can't connect to db while running our application because db isn't running at that time.
+    depends_on:
+      - mysqldb
+
+    # build keyword mean, find docker file to build under same level of this compose file,
+    # we can add context and dockerfile keyword to find our customize dockerfile if our dockerfile has not formal name like `Dockerfile-dev`.
+    build: ./
+    restart: unless-stopped
+    env_file: ./.env
+
+    # use $ variable to get value from above env file to define our java application running port
+    ports:
+      - $SPRING_APP_PUBLIC_PORT:$SPRING_APP_INSIDE_DOCKER_PORT
+
+    # get value from env file.
+    # This spring database config will override our database config which we declared in `application.properties` file
+    # `yewin_job_interview_db` is container name which describe in above,
+    # and we need to add that name when we want to connect to our db container, please note that we can only be connected to db container which running under same network.
+    # I used root password to connect db as that password is already added when we create db container.
+    # I used MySQL8dialect because current latest MySQL version is 8.
+
+    # here, I used db password and username by reading from env file for security season.
+    environment:
+      SPRING_APPLICATION_JSON: '{
+        "spring.datasource.url"  : "jdbc:mysql://yewin_job_interview_db:$MYSQLDB_INSIDE_DOCKER_PORT/$MYSQLDB_DATABASE_NAME",
+        "spring.datasource.username" : "$MYSQLDB_USER",
+        "spring.datasource.password" : "$MYSQLDB_ROOT_PASSWORD",
+        "spring.jpa.properties.hibernate.dialect" : "org.hibernate.dialect.MySQL8Dialect",
+        "spring.jpa.hibernate.ddl-auto" : "update"
+      }'
+#    stdin_open: true
+#    tty: true
+
+# activate volume name call `db` to use this name from above.
+volumes:
+  db:
+    name: yewin-job-interview-volume
+
+# activate network tab name call `my-app-network` to use this name from above services.
+networks:
+  # I created a new network call yewin-job-interview-network and declare driver as `bridge`.
+  # this network is bind with above network keyword
+  # Network is to define our services (2 applications in above) will run under this same network
+  # and all services need to run under same network to communicate each other. If not, services can't connect each other.
+  yewin-job-interview:
+    driver: bridge
+    name: yewin-job-interview-network

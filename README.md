@@ -59,23 +59,25 @@ This project is built with
 * [Java](https://www.oracle.com/java/technologies/javase/javase8-archive-downloads.html)
 * [Maven](https://maven.apache.org/download.cgi)
 * [MySQL Database](https://github.com/yewin-mm/mysql-docker-container)
-
+* [Docker](https://www.docker.com/products/docker-desktop/)
 
 <a name="getting-started"></a>
 ## 🔥 Getting Started
 This project purpose is to show my interviewer.
-See the [Prerequisites](#prerequisites) sections for basic knowledge and go as per below [Instruction](#instruction) section.
+See the [Prerequisites](#prerequisites) sections for basic knowledge and test application as per below [Instruction](#instruction) section.
 
 
 <a name="before-you-begin"></a>
 ### 🔔 Before you begin
 If you are new in Git, GitHub and new in Spring Boot configuration structure, <br>
 You should see basic detail instructions first in here [Spring Boot Application Instruction](https://github.com/yewin-mm/spring-boot-app-instruction)<br>
-If you are not good enough in basic API knowledge with Java Spring Boot and other spring basic knowledge, you should see below example projects first. <br>
+If you are not good enough in basic API knowledge with Java, Spring Boot, Docker and other spring basic knowledge, you should see below example projects first. <br>
 Click below links.
 * [Spring Boot Sample CRUD Application](https://github.com/yewin-mm/spring-boot-sample-crud) (for sample CRUD application)
 * [Reading Values from Properties files](https://github.com/yewin-mm/reading-properties-file-values) (for reading values from properties files)
 * [MySQL DB](https://github.com/yewin-mm/mysql-docker-container)
+* [Spring Boot JPA Docker](https://github.com/yewin-mm/spring-boot-jpa-docker)
+* [Spring Boot Docker Compose Sample](https://github.com/yewin-mm/spring-boot-docker-compose-sample)
 
 <a name="clone-project"></a>
 ### 🥡 Clone Project
@@ -90,16 +92,31 @@ Prerequisites can be found here, [Spring Boot Application Instruction](https://g
 
 <a name="instruction"></a>
 ### 📝 Instruction
-* Make sure MySQL DB version upper 8 is running in your local.
-* Go to MySQL Console and crate database with name `job_interview`.
-* Please make sure there is no port are running with 8080 in your machine, if not so, please change the port.
-* You can see my Dynamic Reading from `application.properties` file and Salary Calculator based on your input data set.
-* So, if you want to add new currency, just add your currency and value in `application.properties`.
-* I just load data one time when the application was started.
-* Please note that there were `a lot of differences format`, not only changing currencies but also changing positions <br> 
-and sometimes, two currencies are there and some are unstructured format. Even some have character encoding issue and also some are not valid data.
-* For the differences format, please see the file `/resources/jobinfo-data/sample-differences-format-data.txt`.
-* I control all the things as much as I can and convert it to BAHT currency which is use as default currency in this application.
+* Please make sure there is no port are running with `8080` in your machine.
+* There are two ways to run.
+1. Run in your local
+2. Run with docker
+
+* If you run in your local
+  * Make sure MySQL DB version upper 8 is running in your local.
+  * Go to MySQL Console and crate database with name `job_interview`.
+  
+* If you run with docker
+  * Go to this application cloned folder with CMD or Terminal.
+  * Type
+  * ```sh
+    docker-compose up -d  
+    ```
+  * If you see the logs like `Container yewin_job_interview_container  Started`, that's mean application was successfully run.
+  
+* Facts
+  * You can see my Dynamic Reading from `application.properties` file and Salary Calculator based on your input data set.
+  * So, if you want to add new currency, just add your currency and value in `application.properties`.
+  * I just load data one time when the application was started.
+  * Please note that there were `a lot of differences format`, not only changing currencies but also changing positions <br> 
+  and sometimes, two currencies are there and some are unstructured format. Even some have character encoding issue and also some are not valid data.
+  * For the differences format, please see the file `/resources/jobinfo-data/sample-differences-format-data.txt`.
+  * I control all the things as much as I can and convert it to BAHT currency which is use as default currency in this application.
 
 
 <a name="testing"></a>
@@ -110,6 +127,7 @@ and sometimes, two currencies are there and some are unstructured format. Even s
 * There are total of 13 APIs in there, and you can test all APIs. 
 
 ***After that you can see the code***
+***Please let me know if you have any questions or face any errors***
 
 
 <a name="contact"></a>
