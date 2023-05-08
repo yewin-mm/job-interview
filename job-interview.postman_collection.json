@@ -1,0 +1,395 @@
+{
+	"info": {
+		"_postman_id": "b0aefb30-d043-41f7-93ad-a81991b014f7",
+		"name": "job-interview",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "9784437"
+	},
+	"item": [
+		{
+			"name": "get data (all param)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/jobInterview/staticJob/getJobData?salary(lte)=100000&salary(gte)=10000&filter_fields=job_title,salary,gender&sort=job_title,desc&sort=salary,desc&sort=gender,asc&page=0&size=5",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"jobInterview",
+						"staticJob",
+						"getJobData"
+					],
+					"query": [
+						{
+							"key": "salary(lte)",
+							"value": "100000"
+						},
+						{
+							"key": "salary(gte)",
+							"value": "10000"
+						},
+						{
+							"key": "filter_fields",
+							"value": "job_title,salary,gender"
+						},
+						{
+							"key": "sort",
+							"value": "job_title,desc"
+						},
+						{
+							"key": "sort",
+							"value": "salary,desc"
+						},
+						{
+							"key": "sort",
+							"value": "gender,asc"
+						},
+						{
+							"key": "page",
+							"value": "0"
+						},
+						{
+							"key": "size",
+							"value": "5"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get data (without param)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/jobInterview/staticJob/getJobData",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"jobInterview",
+						"staticJob",
+						"getJobData"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "salary (gte)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/jobInterview/staticJob/getJobData?salary(gte)=100000",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"jobInterview",
+						"staticJob",
+						"getJobData"
+					],
+					"query": [
+						{
+							"key": "salary(gte)",
+							"value": "100000"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "salary (lte)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/jobInterview/staticJob/getJobData?salary(lte)=100000",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"jobInterview",
+						"staticJob",
+						"getJobData"
+					],
+					"query": [
+						{
+							"key": "salary(lte)",
+							"value": "100000"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "filter",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/jobInterview/staticJob/getJobData?filter_fields=job_title,gender,salary",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"jobInterview",
+						"staticJob",
+						"getJobData"
+					],
+					"query": [
+						{
+							"key": "filter_fields",
+							"value": "job_title,gender,salary"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "1 filter",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/jobInterview/staticJob/getJobData?filter_fields=job_title",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"jobInterview",
+						"staticJob",
+						"getJobData"
+					],
+					"query": [
+						{
+							"key": "filter_fields",
+							"value": "job_title"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "1 filter (2)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/jobInterview/staticJob/getJobData?filter_fields=salary",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"jobInterview",
+						"staticJob",
+						"getJobData"
+					],
+					"query": [
+						{
+							"key": "filter_fields",
+							"value": "salary"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "1 filter (3)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/jobInterview/staticJob/getJobData?filter_fields=gender",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"jobInterview",
+						"staticJob",
+						"getJobData"
+					],
+					"query": [
+						{
+							"key": "filter_fields",
+							"value": "gender"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "2 filter",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/jobInterview/staticJob/getJobData?filter_fields=job_title,gender",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"jobInterview",
+						"staticJob",
+						"getJobData"
+					],
+					"query": [
+						{
+							"key": "filter_fields",
+							"value": "job_title,gender"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "2 filter (2)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/jobInterview/staticJob/getJobData?filter_fields=salary,gender",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"jobInterview",
+						"staticJob",
+						"getJobData"
+					],
+					"query": [
+						{
+							"key": "filter_fields",
+							"value": "salary,gender"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "2 filter (3)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/jobInterview/staticJob/getJobData?filter_fields=job_title,salary",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"jobInterview",
+						"staticJob",
+						"getJobData"
+					],
+					"query": [
+						{
+							"key": "filter_fields",
+							"value": "job_title,salary"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "sort",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/jobInterview/staticJob/getJobData?sort=job_title,desc&sort=salary,desc&sort=gender,asc",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"jobInterview",
+						"staticJob",
+						"getJobData"
+					],
+					"query": [
+						{
+							"key": "sort",
+							"value": "job_title,desc"
+						},
+						{
+							"key": "sort",
+							"value": "salary,desc"
+						},
+						{
+							"key": "sort",
+							"value": "gender,asc"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "page",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/jobInterview/staticJob/getJobData?page=0&size=5",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"jobInterview",
+						"staticJob",
+						"getJobData"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "0"
+						},
+						{
+							"key": "size",
+							"value": "5"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
