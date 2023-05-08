@@ -37,7 +37,6 @@ public class ConstantUtil {
     public static final String COMMA = ",";
     public static final String M = "M";
     public static final String K = "k";
-    public static final String KCAP = "K";
     public static final String WAN = "ä¸‡"; // ten thousands
     public static final String WAN_ESCAPE = "ä¸";
     public static final String WAN_ESCAPE1 = "ä";
@@ -58,8 +57,6 @@ public class ConstantUtil {
     public static final String JOB = "job";
     public static final String SALARY = "salary";
     public static final String GENDER = "gender";
-
-    public static final String JOB_AND_SALARY_AND_GENDER = "jobAndSalaryAndGender";
     public static final String JOB_AND_SALARY = "jobAndSalary";
     public static final String JOB_AND_GENDER = "jobAndGender";
     public static final String SALARY_AND_GENDER = "salaryAndGender";
@@ -67,7 +64,9 @@ public class ConstantUtil {
     public static final String THAI_ZONE_ID = "Asia/Bangkok";
     public static final String SALARY_INVALID = "Salary is not valid format.";
     public static final String FILTER_INVALID = "At least one valid filter should be present. (job_title, salary, gender)";
-    public static final String SORT_TYPE_INVALID = "Sort type is not valid. (should be ASC or DESC)";
+    public static final String SORT_ORDER_INVALID = "At least one valid sort filed and order direction should be present. (job_title,asc or job_title,desc or salary,asc or salary,desc or gender,asc or gender,desc)";
+    public static final String MAXIMUM_COUNT = "Reach more than limitation sort field count. Count is 3. (job_title,asc or job_title,desc or salary,asc or salary,desc or gender,asc or gender,desc)";
+    public static final String SORT_FIELD_INVALID = "Sort field is not valid. (job_title,asc or job_title,desc or salary,asc or salary,desc or gender,asc or gender,desc)";
     public static final String PAGE_INVALID = "Page is not valid format.";
     public static final String SIZE_INVALID = "Size is not valid format.";
 }

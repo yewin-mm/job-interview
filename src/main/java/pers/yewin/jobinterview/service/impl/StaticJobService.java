@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import helper.DateTimeUtil;
 import helper.ResponseUtil;
-import helper.ValidationUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,12 +22,12 @@ import pers.yewin.jobinterview.model.dto.JobSalaryDTO;
 import pers.yewin.jobinterview.model.dto.JobSalaryGenderDTO;
 import pers.yewin.jobinterview.model.dto.SalaryGenderDTO;
 import pers.yewin.jobinterview.model.entity.SalaryInfo;
-import pers.yewin.jobinterview.model.pojo.FilterTypeCount;
-import pers.yewin.jobinterview.model.pojo.OrderType;
 import pers.yewin.jobinterview.model.pojo.SalaryJson;
-import pers.yewin.jobinterview.model.pojo.SortBy;
 import pers.yewin.jobinterview.model.request.JobDataRequest;
+import pers.yewin.jobinterview.model.response.GenderResponse;
+import pers.yewin.jobinterview.model.response.JobResponse;
 import pers.yewin.jobinterview.model.response.JobResultResponse;
+import pers.yewin.jobinterview.model.response.SalaryResponse;
 import pers.yewin.jobinterview.repository.SalaryRepository;
 import pers.yewin.jobinterview.service.JobService;
 import pers.yewin.jobinterview.uitl.ResourceUtil;
@@ -40,12 +39,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 import static helper.CommonUtil.printWarn;
 import static helper.ConstantUtil.*;
 import static helper.ValidationUtil.isEmptyCollection;
+import static pers.yewin.jobinterview.uitl.CommonUtil.getFilter;
+import static pers.yewin.jobinterview.uitl.CommonUtil.getSortBy;
 import static pers.yewin.jobinterview.uitl.ConstantUtil.*;
 
 /**
@@ -153,7 +152,12 @@ public class StaticJobService implements JobService {
     @Override
     public ResponseEntity<ServiceResponse> getJobData(JobDataRequest request) {
         try {
-            List<Sort.Order> orders = getSortBy(request.getSortFields()==null?new ArrayList<>():request.getSortFields());
+            ServiceResponse response;
+            response  = getSortBy(request.getSortFields()==null?new ArrayList<>():request.getSortFields());
+            if(!response.getStatus().getStatus().equals(SUCCESS_MESSAGE)){
+                return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+            }
+            List<Sort.Order> orders = (List<Sort.Order>) response.getData();
             Pageable pageable = PageRequest.of(request.getPage(), request.getSize(), Sort.by(orders));
 
             String filter = getFilter(request);
@@ -161,7 +165,7 @@ public class StaticJobService implements JobService {
             JobResultResponse jobResult = retrieveData(filter, request, pageable);
 
             // here, ServiceResponse is my customize microservice response object and I embedded my library in this project.
-            ServiceResponse response =  ResponseUtil.getResponseObj(SUCCESS_MESSAGE, "", jobResult, THAI_ZONE_ID);
+            response =  ResponseUtil.getResponseObj(SUCCESS_MESSAGE, "", jobResult, THAI_ZONE_ID);
 
             return ResponseEntity.ok(response);
 
@@ -173,160 +177,6 @@ public class StaticJobService implements JobService {
         }
 
 
-    }
-
-
-
-    // this method is to get sort by
-    private List<Sort.Order> getSortBy(List<String> sortFields){
-
-        if(isEmptyCollection(sortFields))
-            sortFields.add("jobTitle,desc"); // default order
-
-
-        if(sortFields.size()==2){ // to encounter if only one sort type was come, list size will be 2, and we need to combine as comma
-            String order = sortFields.get(1);
-            String field = sortFields.get(0);
-            if(order.equalsIgnoreCase(OrderType.ASC.getValue()) || order.equalsIgnoreCase(OrderType.DESC.getValue())){
-                sortFields.remove(1);
-                sortFields.add(0, field +","+order);
-            }
-        }
-
-        return sortFields.stream().map(sortField -> {
-            String[] split = sortField.split(COMMA_REGEX);
-            String field = split[0];
-            if(!isValidFields(field)){
-                return null;
-            }
-            field = checkJobTitle(field);
-            if (split.length == 2 && "asc".equalsIgnoreCase(split[1])) {
-                return Sort.Order.asc(field);
-            } else if (split.length == 2 && "desc".equalsIgnoreCase(split[1])) {
-                return Sort.Order.desc(field);
-            } else {
-                return null;
-            }
-        }).filter(Objects::nonNull).collect(Collectors.toList());
-
-
-    }
-
-    private String checkJobTitle(String field){
-        if(field.equalsIgnoreCase(SortBy.JOB_TITLE.getValue()) || field.equalsIgnoreCase(SortBy.JOB_TITLE_FIELD.getValue())){
-            return SortBy.JOB_TITLE_FIELD.getValue();
-        }
-        return field;
-    }
-
-    private boolean isValidFields(String value){
-        if(value.equalsIgnoreCase(SortBy.JOB_TITLE.getValue()) || value.equalsIgnoreCase(SortBy.JOB_TITLE_FIELD.getValue()) )
-            return true;
-        else if(value.equalsIgnoreCase(SortBy.SALARY.getValue()))
-            return true;
-        else return value.equalsIgnoreCase(SortBy.GENDER.getValue());
-    }
-
-    // this method is to get filter list
-    private String getFilter(JobDataRequest request){
-        if(ValidationUtil.isEmptyString(request.getFilterFields())){
-            return ALL;
-        }
-        String [] filterList = request.getFilterFields().split(COMMA_REGEX);
-        if(filterList.length==1) {
-            FilterTypeCount typeCount = new FilterTypeCount(0,0,0,0);
-            getCount(request.getFilterFields(), typeCount);
-            return getSingleFilter(typeCount);
-
-        }else if(filterList.length==2){
-            FilterTypeCount typeCount = new FilterTypeCount(0,0,0,0);
-            for(String filter: filterList){
-                getCount(filter, typeCount);
-            }
-            return get2FilterType(typeCount);
-
-        }else if(filterList.length==3){
-            FilterTypeCount typeCount = new FilterTypeCount(0,0,0,0);
-            for(String filter: filterList){
-                getCount(filter, typeCount);
-            }
-            return get3FilterType(typeCount);
-
-        }else {
-            FilterTypeCount typeCount = new FilterTypeCount(0,0,0,0);
-            for(String filter: filterList){
-                getCount(filter, typeCount);
-            }
-            return getManyFilterType(typeCount);
-        }
-
-    }
-
-    // this method is to calculate how many text are repeated
-    private void getCount(String filter, FilterTypeCount typeCount){
-
-        if (filter.equalsIgnoreCase(SortBy.JOB_TITLE.getValue()) || filter.equalsIgnoreCase(SortBy.JOB_TITLE_FIELD.getValue())) {
-            typeCount.setJob(typeCount.getJob() + 1);
-        } else if (filter.equalsIgnoreCase(SortBy.SALARY.getValue())) {
-            typeCount.setSalary(typeCount.getSalary() + 1);
-        } else if (filter.equalsIgnoreCase(SortBy.GENDER.getValue())) {
-            typeCount.setGender(typeCount.getGender() + 1);
-        }else
-            typeCount.setUnknown(typeCount.getUnknown() + 1);
-    }
-
-    private String getSingleFilter(FilterTypeCount typeCount) {
-        if(typeCount.getJob() > 0)
-            return JOB;
-        if(typeCount.getSalary() > 0 )
-            return SALARY;
-        if(typeCount.getGender() > 0)
-            return GENDER;
-
-        return UNKNOWN; // if we can't recognize the filter, we will go with all fields display
-    }
-
-    private String get2FilterType(FilterTypeCount typeCount) {
-        if(typeCount.getJob() == 1 && typeCount.getSalary() == 1)
-            return JOB_AND_SALARY;
-        if(typeCount.getJob() == 1 && typeCount.getGender() == 1)
-            return JOB_AND_GENDER;
-        if(typeCount.getSalary() == 1 && typeCount.getGender() == 1)
-            return SALARY_AND_GENDER;
-
-        return getSingleFilter(typeCount);
-    }
-
-    private String get3FilterType(FilterTypeCount typeCount) {
-        if(typeCount.getJob() == 1 && typeCount.getSalary() == 1 && typeCount.getGender() == 1)
-            return ALL;
-
-        if(typeCount.getJob() == 1 && typeCount.getSalary() == 1 && typeCount.getGender() == 0)
-            return JOB_AND_SALARY;
-
-        if(typeCount.getJob() == 1 && typeCount.getSalary() == 0 && typeCount.getGender() == 1)
-            return JOB_AND_GENDER;
-
-        if(typeCount.getJob() == 0 && typeCount.getSalary() == 1 && typeCount.getGender() == 1)
-            return SALARY_AND_GENDER;
-
-        return getSingleFilter(typeCount);
-    }
-
-    private String getManyFilterType(FilterTypeCount typeCount) {
-        if(typeCount.getJob() > 0 && typeCount.getSalary() > 0 && typeCount.getGender() > 0)
-            return ALL;
-
-        if(typeCount.getJob() > 0 && typeCount.getSalary() > 0 && typeCount.getGender() == 0)
-            return JOB_AND_SALARY;
-
-        if(typeCount.getJob() > 0 && typeCount.getSalary() == 0 && typeCount.getGender() > 0)
-            return JOB_AND_GENDER;
-
-        if(typeCount.getJob() == 0 && typeCount.getSalary() > 1 && typeCount.getGender() > 1)
-            return SALARY_AND_GENDER;
-
-        return getSingleFilter(typeCount);
     }
 
     // retrieving data from database as per input filer and request
@@ -347,15 +197,15 @@ public class StaticJobService implements JobService {
                 break;
             case JOB:
                 Page<String> jobDTOPage = salaryRepo.findJobBySalary(request.getMinEqSalary(), request.getMaxEqSalary(), STATIC_TYPE, false, pageable);
-                jobResult = new JobResultResponse(jobDTOPage.getContent(), jobDTOPage.getNumber(), jobDTOPage.getSize(), jobDTOPage.hasNext(), jobDTOPage.getTotalPages());
+                jobResult = new JobResultResponse(new JobResponse(jobDTOPage.getContent()), jobDTOPage.getNumber(), jobDTOPage.getSize(), jobDTOPage.hasNext(), jobDTOPage.getTotalPages());
                 break;
             case SALARY:
                 Page<Double> salaryDTOPage = salaryRepo.findSalaryBySalary(request.getMinEqSalary(), request.getMaxEqSalary(), STATIC_TYPE, false, pageable);
-                jobResult = new JobResultResponse(salaryDTOPage.getContent(), salaryDTOPage.getNumber(), salaryDTOPage.getSize(), salaryDTOPage.hasNext(), salaryDTOPage.getTotalPages());
+                jobResult = new JobResultResponse(new SalaryResponse(salaryDTOPage.getContent()), salaryDTOPage.getNumber(), salaryDTOPage.getSize(), salaryDTOPage.hasNext(), salaryDTOPage.getTotalPages());
                 break;
             case GENDER:
                 Page<String> genderDTOPage = salaryRepo.findGenderBySalary(request.getMinEqSalary(), request.getMaxEqSalary(), STATIC_TYPE, false, pageable);
-                jobResult = new JobResultResponse(genderDTOPage.getContent(), genderDTOPage.getNumber(), genderDTOPage.getSize(), genderDTOPage.hasNext(), genderDTOPage.getTotalPages());
+                jobResult = new JobResultResponse(new GenderResponse(genderDTOPage.getContent()), genderDTOPage.getNumber(), genderDTOPage.getSize(), genderDTOPage.hasNext(), genderDTOPage.getTotalPages());
                 break;
 
             default: // if we can't recognize the filter, we will go with all fields display
